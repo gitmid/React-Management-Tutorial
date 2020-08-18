@@ -1,0 +1,3 @@
+[0818/001500.379:ERROR:file_io.cc(134)] WriteFile: 파이프가 닫히는 중입니다. (0xE8)
+[0818/001500.391:ERROR:file_io.cc(134)] WriteFile: 파이프가 닫히는 중입니다. (0xE8)
+[0818/001528.621:ERROR:file_io.cc(134)] WriteFile: 파이프가 닫히는 중입니다. (0xE8)

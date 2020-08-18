@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { notStrictEqual } from 'assert';
 
 ReactDOM.render(
   <React.StrictMode>
