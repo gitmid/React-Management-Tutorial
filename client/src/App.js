@@ -66,7 +66,7 @@ class App extends Component {
 
   progress = () =>
  {
-   const { completed } = this.state;
+   const { completed } = this.state; // state 변수(completed) 또는 props는 {} 로 감싸줌 , 번외로 jsx문법안에 표현식 사용에도 {}로 감싸줌
    this.setState({ completed: completed >= 100 ? 0 : completed + 1});
  }
 
