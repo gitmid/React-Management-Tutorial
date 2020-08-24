@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 5000;
+const path = require('path');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true}));
@@ -20,7 +21,21 @@ const connection = mysql.createConnection({
 });
 connection.connect();
 
-app.get('/api/customers', (req,res) => {
+const multer = require('multer'); 
+// const upload = multer({dest: './upload'}) // 확장자 문제로 아래 처럼 설정 추가 
+
+const upload = multer({
+  storage: multer.diskStorage({ // 폴더에 파일 업로드 설정
+    destination: function (req, file, cb) { // 경로 설정
+      cb(null, './upload');
+    },
+    filename: function (req, file, cb) { // 파일 이름 설정 타임스탬프+path.extname을 사용하여 확장자명을 붙여서 업로드
+      cb(null, new Date().valueOf() + path.extname(file.originalname)); // 타임스탬프+확장자명으로 파일 업로드
+    }
+  }),
+});
+
+app.get('/api/customers', (req,res) => { 
   connection.query(
     "SELECT * FROM CUSTOMER", (err, rows, fields) => {
       res.send(rows);
@@ -28,6 +43,23 @@ app.get('/api/customers', (req,res) => {
   );
 });
 
+app.use('/image',express.static('./upload')); // 사용자가 image라는 가상경로에 접근했을 때 실제 서버는 upload폴더를 매핑 
 
+app.post('/api/customers', upload.single('image'), (req, res) => { // DB 저장 과정 
+  let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?)';
+  const ext = path.extname(req.file.originalname); 
+  console.log(req.file.originalname);
+  console.log(ext);
+  let image = '/image/' + req.file.filename; //기본설정으로 multer라이브러리가 겹치지 않는 이름으로 저장하지만 100%는 아닌듯하다. 위에서 multer설정에서 타임스태프를 이용하여 변경하였다 
+  console.log(image);
+  let name = req.body.name;
+  let birthday = req.body.birthday;
+  let gender = req.body.gender;
+  let job = req.body.job;
+  let params = [image, name, birthday, gender, job]; // db에 전송할 데이터 (? , ? 순서대로)
+  connection.query(sql, params, (err, rows, fields) => {
+    res.send(rows);
+  });
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); // 숫자1 옆 ` 사용해야 안에 변수 출력가능 
