@@ -48,10 +48,7 @@ app.use('/image',express.static('./upload')); // 사용자가 image라는 가상
 app.post('/api/customers', upload.single('image'), (req, res) => { // DB 저장 과정 
   let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?)';
   const ext = path.extname(req.file.originalname); 
-  console.log(req.file.originalname);
-  console.log(ext);
   let image = '/image/' + req.file.filename; //기본설정으로 multer라이브러리가 겹치지 않는 이름으로 저장하지만 100%는 아닌듯하다. 위에서 multer설정에서 타임스태프를 이용하여 변경하였다 
-  console.log(image);
   let name = req.body.name;
   let birthday = req.body.birthday;
   let gender = req.body.gender;

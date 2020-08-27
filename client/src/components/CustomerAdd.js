@@ -16,7 +16,9 @@ class CustomerAdd extends React.Component {
 
     handleFormSubmit = (e) => {
         e.preventDefault()
-        this.addCustomer().then((response)=> {console.log(response.data);})
+        this.addCustomer().then((response)=> {console.log(response.data);
+        this.props.stateRefresh();
+        })
         this.setState({
             file: null,
             userName: '',
@@ -25,7 +27,6 @@ class CustomerAdd extends React.Component {
             job : '',
             fileName : ''
         });
-        //window.location.reload(); // 강의에선 테스트목적으로 submit과 동시에 새로고침 되게끔 했지만 실제로 해보니 이렇게 하면 submit이 제대로 동작하지않음
     }
 
     handleFileChange = (e) =>{
