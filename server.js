@@ -37,7 +37,7 @@ const upload = multer({
 
 app.get('/api/customers', (req,res) => { 
   connection.query(
-    "SELECT * FROM CUSTOMER", (err, rows, fields) => {
+    "SELECT * FROM CUSTOMER WHERE isDeleted = 0", (err, rows, fields) => {
       res.send(rows);
     }
   );
@@ -46,9 +46,9 @@ app.get('/api/customers', (req,res) => {
 app.use('/image',express.static('./upload')); // 사용자가 image라는 가상경로에 접근했을 때 실제 서버는 upload폴더를 매핑 
 
 app.post('/api/customers', upload.single('image'), (req, res) => { // DB 저장 과정 
-  let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?)';
+  let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?,now(), 0)';
   const ext = path.extname(req.file.originalname); 
-  let image = '/image/' + req.file.filename; //기본설정으로 multer라이브러리가 겹치지 않는 이름으로 저장하지만 100%는 아닌듯하다. 위에서 multer설정에서 타임스태프를 이용하여 변경하였다 
+  let image = '/image/' + req.file.filename; //기본설정으로 multer라이브러리가 겹치지 않는 이름으로 저장하지만 100%는 아닌듯하다. 위에서 multer설정에서 타임스태프를 이용하여 변경한 셋팅값이 적용되어 업로드파일과 동일한 이름을 같게된다.  
   let name = req.body.name;
   let birthday = req.body.birthday;
   let gender = req.body.gender;
@@ -58,5 +58,14 @@ app.post('/api/customers', upload.single('image'), (req, res) => { // DB 저장 
     res.send(rows);
   });
 });
+
+app.delete('/api/customers/:id', (req,res)=> {
+  let sql = 'UPDATE CUSTOMER SET isDeleted = 1 WHERE id = ?'; // db상에 삭제완료를 의미하는 값으로 isDeleted를 1로 변경
+  let params = [req.params.id];
+  connection.query(sql, params, (err, rows, fields)=> {
+    res.send(rows);
+  })
+});
+
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); // 숫자1 옆 ` 사용해야 안에 변수 출력가능 
